@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EduGenie</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+</head>
+<body>
+  <main class="container">
+    <header>
+      <p class="small-title">YOUR AI STUDY COMPANION</p>
+      <h1>EduGenie</h1>
+      <p>Ask questions, understand topics, and plan your learning.</p>
+    </header>
+
+    <section class="card">
+      <form action="/run" method="post">
+        <label for="task">Choose a feature</label>
+        <select id="task" name="task">
+          {% for key, item in tasks.items() %}
+          <option value="{{ key }}"
+            {% if key == selected_task %}selected{% endif %}>
+            {{ item[0] }}
+          </option>
+          {% endfor %}
+        </select>
+
+        <label for="text">Question or study material</label>
+        <textarea id="text" name="text" rows="7" maxlength="12000"
+          placeholder="Example: Explain the Pythagoras theorem"
+          required>{{ user_text }}</textarea>
+
+        <button type="submit">Generate answer</button>
+      </form>
+    </section>
+
+    {% if error %}
+    <section class="card error">
+      <h2>Error</h2>
+      <p>{{ error }}</p>
+    </section>
+    {% endif %}
+
+    {% if result %}
+    <section class="card result">
+      <p class="small-title">{{ label }}</p>
+      <h2>Your result</h2>
+
+      {% if selected_task == "quiz" %}
+        {% for question in result %}
+        <article class="question">
+          <h3>{{ loop.index }}. {{ question.question }}</h3>
+          <ol type="A">
+            {% for option in question.options %}
+            <li>{{ option }}</li>
+            {% endfor %}
+          </ol>
+          <p class="answer"><strong>Answer:</strong> {{ question.answer }}</p>
+        </article>
+        {% endfor %}
+      {% else %}
+        <div class="answer-text">{{ result }}</div>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    <footer>Check important facts with your class notes.</footer>
+  </main>
+</body>
+</html>
